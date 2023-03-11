@@ -41,6 +41,4 @@ function filterConditions(iterableTable, conditionFunction)
     return tempIterationTable
 end
 
-table.insert(getgenv(), filterTable)
-table.insert(getgenv(), filterFunctions)
-table.insert(getgenv(), filterConditions)
+return {["filterTable"] = filterTable, ["filterFunctions"] = filterFunctions, ["filterConditions"] = filterConditions}
