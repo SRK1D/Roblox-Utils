@@ -1,6 +1,6 @@
 -- Made by SRK1D
 
-function getgenv().filterTable(iterableTable, customType)
+function filterTable(iterableTable, customType)
     local tempIterationTable = {}
     for idx, val in pairs(iterableTable) do
         if typeof(val) == customType then
@@ -11,7 +11,7 @@ function getgenv().filterTable(iterableTable, customType)
     return tempIterationTable
 end
 
-function getgenv().filterFunctions(iterableTable, specificsTable)
+function filterFunctions(iterableTable, specificsTable)
     local tempIterationTable = {}
     for idx, val in pairs(iterableTable) do
         local verification = true
@@ -29,7 +29,7 @@ function getgenv().filterFunctions(iterableTable, specificsTable)
     return tempIterationTable
 end
 
-function getgenv().filterConditions(iterableTable, conditionFunction)
+function filterConditions(iterableTable, conditionFunction)
     local tempIterationTable = {}
     for idx, val in pairs(iterableTable) do
         local conditionResult = conditionFunction(val)
@@ -40,3 +40,7 @@ function getgenv().filterConditions(iterableTable, conditionFunction)
 
     return tempIterationTable
 end
+
+table.insert(getgenv(), filterTable)
+table.insert(getgenv(), filterFunctions)
+table.insert(getgenv(), filterConditions)
