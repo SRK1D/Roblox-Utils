@@ -1,0 +1,40 @@
+function filterTable(iterableTable, customType)
+    local tempIterationTable = {}
+    for idx, val in pairs(iterableTable) do
+        if typeof(val) == customType then
+            table.insert(tempIterationTable, val)
+        end
+    end
+
+    return tempIterationTable
+end
+
+function filterFunctions(iterableTable, specificsTable)
+    local tempIterationTable = {}
+    for idx, val in pairs(iterableTable) do
+        local verification = true
+        for idx2, val2 in pairs(specificsTable) do
+            if getinfo(val)[idx2] ~= val2 then
+                verification = false
+            end
+        end
+
+        if verification then
+            table.insert(tempIterationTable, val)
+        end
+    end
+
+    return tempIterationTable
+end
+
+function filterConditions(iterableTable, conditionFunction)
+    local tempIterationTable = {}
+    for idx, val in pairs(iterableTable) do
+        local conditionResult = conditionFunction(val)
+        if conditionResult then
+            table.insert(tempIterationTable, val)
+        end
+    end
+
+    return tempIterationTable
+end
