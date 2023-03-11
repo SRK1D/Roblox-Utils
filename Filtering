@@ -1,4 +1,4 @@
-function filterTable(iterableTable, customType)
+function getgenv().filterTable(iterableTable, customType)
     local tempIterationTable = {}
     for idx, val in pairs(iterableTable) do
         if typeof(val) == customType then
@@ -9,7 +9,7 @@ function filterTable(iterableTable, customType)
     return tempIterationTable
 end
 
-function filterFunctions(iterableTable, specificsTable)
+function getgenv().filterFunctions(iterableTable, specificsTable)
     local tempIterationTable = {}
     for idx, val in pairs(iterableTable) do
         local verification = true
@@ -27,7 +27,7 @@ function filterFunctions(iterableTable, specificsTable)
     return tempIterationTable
 end
 
-function filterConditions(iterableTable, conditionFunction)
+function getgenv().filterConditions(iterableTable, conditionFunction)
     local tempIterationTable = {}
     for idx, val in pairs(iterableTable) do
         local conditionResult = conditionFunction(val)
