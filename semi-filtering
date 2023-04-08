@@ -1,0 +1,151 @@
+type ctable<T> = {T}
+type cdictionary<T, T2> = {[T]: T2}
+
+function getgenv().filtergc(typ: string, options: cdictionary<any, any>, return_one: boolean?)
+    -- Variables
+    local return_one = return_one or false
+
+    local possibleTables: ctable<string> = {'Keys', 'Values', 'KeyValuePairs', 'Metatable'}
+    local possibleFunctions: ctable<string> = {'Name', 'Constants', 'Upvalues', 'IgnoreSyn', 'Proto', 'Environment', 'Hash'}
+    local officialOptions: ctable<string> = {}
+
+    local functionChecks = {
+
+        Name = function(func: (...any) -> ...any, name: string)
+            --Name checking
+            if debug.getinfo(func).name ~= name then
+                return false
+            end
+
+            return true
+        end,
+        Constants = function(func: (...any) -> ...any, constants: ctable<any>)
+            local funcConstants = getconstants(func)
+
+            --Constants length exceptions
+            if #funcConstants == 0 then
+                return false
+            end
+
+            for _, constant in ipairs(constants) do
+                if not table.find(funcConstants, constant) then
+                    return false
+                end
+            end
+
+            return true
+        end,
+        Upvalues = function(func: (...any) -> ...any, upvalues: ctable<any>)
+            local funcUpvalues = getupvalues(func)
+
+            --Upvalues length exceptions
+            if #funcUpvalues == 0 then
+                return false
+            end
+
+            for _, upvalue in ipairs(upvalues) do
+                if not table.find(funcUpvalues, upvalue) then
+                    return false
+                end
+            end
+
+            return true
+        end,
+        IgnoreSyn = function(func: (...any) -> ...any, ignoreCondition: boolean?)
+            if ignoreCondition == nil then
+                return false
+            end
+
+            return not ignoreCondition
+        end,
+        Hash = function(func: (...any) -> ...any, hash: string)
+            return getfunctionhash(func) == hash
+        end
+
+    }
+
+    local tableChecks = {
+        Keys = function(table: cdictionary<any, any>, keys: ctable<any>)
+            for _, w in ipairs(keys) do
+                if table[w] == nil then
+                    return false
+                end
+            end
+            
+            return true
+        end,
+        Values = function(table: cdictionary<any, any>, values: ctable<any>)
+            for _, val in ipairs(values) do
+                local _f = false
+                for __, pV in pairs(table) do
+                    if pV == _f then
+                        _f = true
+                    end
+                end
+
+                if _f == false then
+                    return false
+                end
+            end
+            return true
+        end,
+        KeyValuePairs = function(table:cdictionary<any, any>, values: ctable<any>)
+            for idx, val in pairs(values) do
+                local _f = false
+                for idx2, val2 in pairs(table) do
+                    if idx2 == idx and val2 == val then
+                        _f = true
+                    end
+                end
+
+                if _f == false then
+                    return false
+                end
+            end
+            return true
+        end
+    }
+
+    -- Assertions
+    assert(table.find({'table', 'function'}, typ) ~= nil, 'Invalid type')
+
+    if typ == 'table' then
+        for _, w in ipairs(possibleTables) do
+            table.insert(officialOptions, options[w] ~= nil and w or nil)
+        end
+    else
+        for _, w in ipairs(possibleFunctions) do
+            table.insert(officialOptions, options[w] ~= nil and w or nil)
+        end
+
+        table.insert(officialOptions, 'IgnoreSyn')
+    end
+
+    assert(#officialOptions ~= 0, 'The options table cannot be empty')
+
+    local possibilities = {}
+
+    local branch = typ == 'function' and functionChecks or tableChecks
+
+    for _, w in pairs(getgc()) do
+        if typeof(w) == typ then
+            local f2 = true
+            for z, f in officialOptions do
+                if branch[f](w, options[f]) == false then
+                    f2 = false
+                    break
+                end
+            end
+
+            if f2 then
+                if return_one then
+                    return w
+                else
+                    table.insert(possibilities, w)
+                end
+            end
+        end
+    end
+
+    return possibilities
+end
