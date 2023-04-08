@@ -1,6 +1,6 @@
 
 
-function filtergc(typ: string, options, return_one: boolean?)
+function filtergc(typ, options, return_one)
     -- Variables
     local return_one = return_one or false
 
@@ -10,7 +10,7 @@ function filtergc(typ: string, options, return_one: boolean?)
 
     local functionChecks = {
 
-        Name = function(func: (...any) -> ...any, name: string)
+        Name = function(func, name)
             --Name checking
             if debug.getinfo(func).name ~= name then
                 return false
@@ -18,7 +18,7 @@ function filtergc(typ: string, options, return_one: boolean?)
 
             return true
         end,
-        Constants = function(func: (...any) -> ...any, constants)
+        Constants = function(func, constants)
             local funcConstants = getconstants(func)
 
             --Constants length exceptions
@@ -34,7 +34,7 @@ function filtergc(typ: string, options, return_one: boolean?)
 
             return true
         end,
-        Upvalues = function(func: (...any) -> ...any, upvalues)
+        Upvalues = function(func, upvalues)
             local funcUpvalues = getupvalues(func)
 
             --Upvalues length exceptions
@@ -50,14 +50,14 @@ function filtergc(typ: string, options, return_one: boolean?)
 
             return true
         end,
-        IgnoreSyn = function(func: (...any) -> ...any, ignoreCondition: boolean?)
+        IgnoreSyn = function(func, ignoreCondition)
             if ignoreCondition == nil then
                 return false
             end
 
             return not ignoreCondition
         end,
-        Hash = function(func: (...any) -> ...any, hash: string)
+        Hash = function(func, hash)
             return getfunctionhash(func) == hash
         end
 
@@ -129,7 +129,7 @@ function filtergc(typ: string, options, return_one: boolean?)
     for _, w in pairs(getgc()) do
         if typeof(w) == typ then
             local f2 = true
-            for z, f in officialOptions do
+            for z, f in pairs(officialOptions) do
                 if branch[f](w, options[f]) == false then
                     f2 = false
                     break
@@ -137,6 +137,7 @@ function filtergc(typ: string, options, return_one: boolean?)
             end
 
             if f2 then
+                print("Found")
                 if return_one then
                     return w
                 else
