@@ -1,7 +1,7 @@
 type ctable<T> = {T}
 type cdictionary<T, T2> = {[T]: T2}
 
-function getgenv().filtergc(typ: string, options: cdictionary<any, any>, return_one: boolean?)
+function filtergc(typ: string, options: cdictionary<any, any>, return_one: boolean?)
     -- Variables
     local return_one = return_one or false
 
@@ -149,3 +149,5 @@ function getgenv().filtergc(typ: string, options: cdictionary<any, any>, return_
 
     return possibilities
 end
+
+getgenv().filtergc = filtergc
