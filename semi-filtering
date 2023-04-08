@@ -1,13 +1,12 @@
-type ctable<T> = {T}
-type cdictionary<T, T2> = {[T]: T2}
 
-function filtergc(typ: string, options: cdictionary<any, any>, return_one: boolean?)
+
+function filtergc(typ: string, options, return_one: boolean?)
     -- Variables
     local return_one = return_one or false
 
-    local possibleTables: ctable<string> = {'Keys', 'Values', 'KeyValuePairs', 'Metatable'}
-    local possibleFunctions: ctable<string> = {'Name', 'Constants', 'Upvalues', 'IgnoreSyn', 'Proto', 'Environment', 'Hash'}
-    local officialOptions: ctable<string> = {}
+    local possibleTables = {'Keys', 'Values', 'KeyValuePairs', 'Metatable'}
+    local possibleFunctions = {'Name', 'Constants', 'Upvalues', 'IgnoreSyn', 'Proto', 'Environment', 'Hash'}
+    local officialOptions = {}
 
     local functionChecks = {
 
@@ -19,7 +18,7 @@ function filtergc(typ: string, options: cdictionary<any, any>, return_one: boole
 
             return true
         end,
-        Constants = function(func: (...any) -> ...any, constants: ctable<any>)
+        Constants = function(func: (...any) -> ...any, constants)
             local funcConstants = getconstants(func)
 
             --Constants length exceptions
@@ -35,7 +34,7 @@ function filtergc(typ: string, options: cdictionary<any, any>, return_one: boole
 
             return true
         end,
-        Upvalues = function(func: (...any) -> ...any, upvalues: ctable<any>)
+        Upvalues = function(func: (...any) -> ...any, upvalues)
             local funcUpvalues = getupvalues(func)
 
             --Upvalues length exceptions
@@ -65,19 +64,19 @@ function filtergc(typ: string, options: cdictionary<any, any>, return_one: boole
     }
 
     local tableChecks = {
-        Keys = function(table: cdictionary<any, any>, keys: ctable<any>)
+        Keys = function(tablew, keys)
             for _, w in ipairs(keys) do
-                if table[w] == nil then
+                if tablew[w] == nil then
                     return false
                 end
             end
             
             return true
         end,
-        Values = function(table: cdictionary<any, any>, values: ctable<any>)
+        Values = function(tablew, values)
             for _, val in ipairs(values) do
                 local _f = false
-                for __, pV in pairs(table) do
+                for __, pV in pairs(tablew) do
                     if pV == _f then
                         _f = true
                     end
@@ -89,10 +88,10 @@ function filtergc(typ: string, options: cdictionary<any, any>, return_one: boole
             end
             return true
         end,
-        KeyValuePairs = function(table:cdictionary<any, any>, values: ctable<any>)
+        KeyValuePairs = function(tablew, values)
             for idx, val in pairs(values) do
                 local _f = false
-                for idx2, val2 in pairs(table) do
+                for idx2, val2 in pairs(tablew) do
                     if idx2 == idx and val2 == val then
                         _f = true
                     end
